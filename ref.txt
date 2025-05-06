@@ -1,0 +1,4 @@
+https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1671-x
+
+https://github.com/DeplanckeLab/BRB-seqTools/blob/master/README.md
+
