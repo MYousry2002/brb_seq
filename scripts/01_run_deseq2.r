@@ -1,10 +1,14 @@
 # === Load libraries ===
 library(DESeq2)
 library(data.table)
+library(ggplot2)
 
 # === Load data ===
 counts <- fread("umi.counts.txt")
 metadata <- fread("sample_metadata.tsv")
+
+# Remove unused barcodes
+metadata <- metadata[metadata$Condition != "_", ]
 
 # Set rownames (gene IDs)
 genes <- counts[[1]]
@@ -13,7 +17,8 @@ rownames(count_matrix) <- genes
 
 # Ensure sample order matches
 metadata <- metadata[metadata$Barcode %in% colnames(count_matrix)]
-count_matrix <- count_matrix[, metadata$Barcode]
+metadata <- metadata[match(colnames(count_matrix), metadata$Barcode)]
+rownames(metadata) <- metadata$Barcode
 
 # === Create DESeq2 object ===
 dds <- DESeqDataSetFromMatrix(
@@ -23,6 +28,29 @@ dds <- DESeqDataSetFromMatrix(
 )
 
 dds <- DESeq(dds)
+
+
+# === PCA Plot (for QC) ===
+vsd <- vst(dds, blind = TRUE)
+pca_data <- plotPCA(vsd, intgroup = "Condition", returnData = TRUE)
+percentVar <- round(100 * attr(pca_data, "percentVar"))
+
+# Add SampleName to PCA data using Barcode match
+pca_data$SampleName <- metadata$SampleName[match(pca_data$name, metadata$Barcode)]
+
+# Save PCA plot
+dir.create("../results/validation", showWarnings = FALSE)
+ggplot(pca_data, aes(x = PC1, y = PC2, color = Condition, label = SampleName)) +
+  geom_point(size = 3) +
+  geom_text_repel(size = 2.5) +
+  xlab(paste0("PC1: ", percentVar[1], "% variance")) +
+  ylab(paste0("PC2: ", percentVar[2], "% variance")) +
+  theme_minimal() +
+  ggtitle("PCA of VST-transformed counts") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggsave("../results/validation/pca_plot.png", width = 6, height = 5)
+
 
 # === Differential Expression Analysis ===
 # Control mapping
