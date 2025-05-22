@@ -42,16 +42,22 @@ pca_data$SampleName <- metadata$SampleName[match(pca_data$name, metadata$Barcode
 
 # Save PCA plot
 dir.create("../results/validation", showWarnings = FALSE)
-ggplot(pca_data, aes(x = PC1, y = PC2, color = Condition, label = SampleName)) +
-  geom_point(size = 3) +
-  geom_text_repel(size = 2.5) +
+
+p <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Condition, label = SampleName)) +
+  geom_point(size = 3, alpha = 0.8) +
+  geom_text_repel(size = 2.5, max.overlaps = 50) +
   xlab(paste0("PC1: ", percentVar[1], "% variance")) +
   ylab(paste0("PC2: ", percentVar[2], "% variance")) +
-  theme_minimal() +
   ggtitle("PCA of VST-transformed counts") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme_classic(base_size = 12) +
+  theme(
+    plot.title = element_text(hjust = 0.5, face = "bold"),
+    legend.title = element_blank(),
+    axis.line = element_line(size = 0.5),
+    axis.ticks = element_line(size = 0.4)
+  )
 
-ggsave("../results/validation/pca_plot.png", width = 6, height = 5)
+ggsave("../results/validation/pca_plot.png", plot = p, width = 6, height = 5)
 
 
 # === Differential Expression Analysis ===
