@@ -4,8 +4,8 @@
 #$ -o ../logs/brbseq_pipeline.out
 #$ -e ../logs/brbseq_pipeline.err
 #$ -l h_rt=24:00:00
-#$ -l h_vmem=32G
-#$ -pe smp 8
+#$ -l h_vmem=64G
+#$ -pe smp 12
 
 
 # Activate Conda env
