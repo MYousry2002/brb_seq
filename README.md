@@ -89,10 +89,10 @@ conda activate brb_seq
 ---
 
 ## Author
+Mohamed Yousry ElSadec
+PhD Student in Bioinformatics, Boston University
+Juan Fuxman Bass Lab
 
-Mohamed Yousry  
-Bioinformatics PhD Student, Boston University  
-Fuxman-Bass lab
 ---
 
 ## License
