@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # ==================== CONFIGURATION ====================
-THREADS=8
+THREADS=12
 FASTQ_DIR="../data/fastq"
 MERGED_DIR="../workdir/merged"
 QC_DIR="../results/qc"
-GENOME_DIR="../genomes/human/STAR_index"
-GENOME_FA="../genomes/human/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-GTF="../genomes/human/Homo_sapiens.GRCh38.108.gtf"
+GENOME_DIR="../../genomes/human/STAR_index"
+GENOME_FA="../../genomes/human/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+GTF="../../genomes/human/Homo_sapiens.GRCh38.108.gtf"
 BARCODE_WHITELIST="../data/barcodes_96_V5A_star.txt"
 BAM_DIR="../workdir/aligned"
 COUNT_MATRIX_DIR="../results/matrix"
@@ -62,13 +62,14 @@ STAR \
   --outSAMattributes NH HI nM AS CR UR CB UB GX GN sS sQ sM \
   --outFilterMultimapNmax 1 > "$LOG_DIR/star_solo.log"
 
+
 # ==================== STEP 5: Convert MTX to Count Matrix ====================
 echo "[Step 5] Converting .mtx to count matrix using R"
 Rscript - <<EOF
 library(data.table)
 library(Matrix)
 matrix_dir <- "$BAM_DIR/Solo.out/Gene/raw/"
-mat <- as.data.frame(as.matrix(readMM(file.path(matrix_dir, "matrix.mtx"))))
+mat <- as.data.frame(as.matrix(readMM(file.path(matrix_dir, "umiDedup-1MM_All.mtx"))))
 features <- fread(file.path(matrix_dir, "features.tsv"), header = FALSE)
 barcodes <- fread(file.path(matrix_dir, "barcodes.tsv"), header = FALSE)
 colnames(mat) <- barcodes\$V1
