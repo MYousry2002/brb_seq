@@ -39,7 +39,7 @@ BRB_SEQ/
 │   └── run_pipeline_job.sh           # Job submission wrapper for SCC
 ├── workdir/
 │   ├── aligned/              # STARsolo output
-│   └── merged/               # Merged outputs if applicable
+│   └── merged/               # Merged fastqs
 ├── env.yml                   # Conda environment definition
 ├── env.sh                    # Environment/module loading
 └── .gitignore
