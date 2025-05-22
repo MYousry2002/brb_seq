@@ -8,7 +8,7 @@ This repository contains scripts and resources for processing BRB-seq (Bulk RNA 
 - **Visualization** including PCA plots, volcano plots, and dotplots
 
 
-## 📁 Directory Structure
+## Directory Structure
 
 ```
 BRB_SEQ/
