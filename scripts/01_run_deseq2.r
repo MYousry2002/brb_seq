@@ -2,22 +2,24 @@
 library(DESeq2)
 library(data.table)
 library(ggplot2)
+library(ggrepel)
 
 # === Load data ===
-counts <- fread("umi.counts.txt")
-metadata <- fread("sample_metadata.tsv")
+counts <- fread("../results/matrix/umi.counts.txt")
+metadata <- fread("../data/sample_metadata.tsv")
 
-# Remove unused barcodes
-metadata <- metadata[metadata$Condition != "_", ]
-
-# Set rownames (gene IDs)
+# === Set gene IDs as rownames and extract count matrix ===
 genes <- counts[[1]]
 count_matrix <- as.matrix(counts[, -1])
 rownames(count_matrix) <- genes
 
-# Ensure sample order matches
-metadata <- metadata[metadata$Barcode %in% colnames(count_matrix)]
-metadata <- metadata[match(colnames(count_matrix), metadata$Barcode)]
+# === Keep only barcodes that are in metadata ===
+valid_barcodes <- colnames(count_matrix)[colnames(count_matrix) %in% metadata$Barcode]
+count_matrix <- count_matrix[, valid_barcodes, drop = FALSE]
+
+# === Subset and reorder metadata to match count matrix columns ===
+metadata <- metadata[metadata$Barcode %in% valid_barcodes, ]
+metadata <- metadata[match(valid_barcodes, metadata$Barcode), ]
 rownames(metadata) <- metadata$Barcode
 
 # === Create DESeq2 object ===
@@ -27,8 +29,8 @@ dds <- DESeqDataSetFromMatrix(
   design = ~ Condition
 )
 
-dds <- DESeq(dds)
-
+# === Run DESeq2 normalization and modeling ===
+dds <- DESeq(dds, fitType="local")
 
 # === PCA Plot (for QC) ===
 vsd <- vst(dds, blind = TRUE)
@@ -77,6 +79,7 @@ for (cond in all_conditions) {
         message("Running DE: ", cond, " vs ", control)
         res <- results(dds, contrast = c("Condition", cond, control))
         res_df <- as.data.frame(res[order(res$pvalue), ])
+        res_df$gene <- rownames(res_df)  # <- Add gene names
         out_file <- file.path(results_dir, paste0("DE_", cond, "_vs_", control, ".tsv"))
         fwrite(res_df, out_file, sep = "\t")
       }
@@ -89,6 +92,7 @@ if ("dmso" %in% all_conditions && "ne" %in% all_conditions) {
   message("Running DE: dmso vs ne")
   res <- results(dds, contrast = c("Condition", "dmso", "ne"))
   res_df <- as.data.frame(res[order(res$pvalue), ])
+  res_df$gene <- rownames(res_df)
   fwrite(res_df, file.path(results_dir, "DE_dmso_vs_ne.tsv"), sep = "\t")
 }
 
@@ -96,6 +100,7 @@ if ("37" %in% all_conditions && "ne" %in% all_conditions) {
   message("Running DE: 37 vs ne")
   res <- results(dds, contrast = c("Condition", "37", "ne"))
   res_df <- as.data.frame(res[order(res$pvalue), ])
+  res_df$gene <- rownames(res_df)
   fwrite(res_df, file.path(results_dir, "DE_37_vs_ne.tsv"), sep = "\t")
 }
 
