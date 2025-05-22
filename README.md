@@ -1,4 +1,4 @@
-# BRB-seq Differential Expression & GSEA Analysis
+# BRB-seq Pipeline
 
 This repository contains scripts and resources for processing BRB-seq (Bulk RNA Barcoding and Sequencing) data to perform:
 
