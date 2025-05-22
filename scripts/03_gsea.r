@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(fgsea)
 library(data.table)
 library(msigdbr)
@@ -17,7 +19,7 @@ pathways <- split(msig_all$gene_symbol, msig_all$gs_name)
 de_files <- list.files("../results/deseq2", pattern = "^DE_.*\\.tsv$", full.names = TRUE)
 
 # Output directory
-gsea_dir <- "../results/gsea"
+gsea_dir <- "../results/gsea/tables"
 dir.create(gsea_dir, showWarnings = FALSE)
 
 # === Run GSEA on each file ===

@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(data.table)
 library(ggplot2)
 library(biomaRt)
@@ -49,7 +51,7 @@ for (file in files) {
   res[, status := fifelse(padj < 0.05 & log2FoldChange > 1, "up",
                    fifelse(padj < 0.05 & log2FoldChange < -1, "down", "ns"))]
 
-  top_genes <- res[!is.na(padj)][order(padj)][1:20]
+  top_genes <- res[!is.na(padj)][order(padj)][1:40]
 
   p <- ggplot(res, aes(x = log2FoldChange, y = -log10(pvalue), color = status)) +
     geom_point(alpha = 0.5) +

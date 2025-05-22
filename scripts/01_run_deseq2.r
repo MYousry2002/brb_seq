@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 # === Load libraries ===
 library(DESeq2)
 library(data.table)
@@ -57,7 +59,7 @@ p <- ggplot(pca_data, aes(x = PC1, y = PC2, color = Condition, label = SampleNam
     axis.ticks = element_line(size = 0.4)
   )
 
-ggsave("../results/validation/pca_plot.png", plot = p, width = 6, height = 5)
+ggsave("../results/pca/pca_plot.png", plot = p, width = 6, height = 5)
 
 
 # === Differential Expression Analysis ===
